@@ -27,31 +27,31 @@ work_or_weekend = st.selectbox('Work Day or Weekend', ['Work Day', 'Weekend/Free
 
 # Meal info
 st.subheader("Log your meal")
-meal_type = st.selectbox('Meal Type', ['Breakfast', 'Lunch', 'Dinner', 'Snack', 'Other'])
-meal_time = st.selectbox('Meal Time', [
+meal_type = st.selectbox('Meal', ['', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Other'])
+meal_time = st.selectbox('Time', [
     '8:00 - 12:00',
     '12:00 - 16:00',
     '16:00 - 20:00',
     '20:00 - 24:00',
     '< 8:00'
 ])
-item_class = st.selectbox('Item Class', ['Food', 'Snack', 'Drink', 'Supplement', 'Medication'])
+item_class = st.selectbox('Item Class', ['', 'Food', 'Snack', 'Drink', 'Supplement', 'Medication'])
 food_item = st.text_input('Item(s)')
 
 # Energy, stress, activity
 st.subheader("Energy, Stress, and Activity")
-energy = st.selectbox('Energy level after meal', ['Energized', 'Balanced', 'Tired', 'Bloated', 'Irritable', 'Other'])
-stress = st.selectbox('Stress level', ['Low', 'Medium', 'High', 'No stress'])
-activity_type = st.selectbox('Physical Activity', ['Daily walk', 'Strength training', 'Fitness training', 'Cardio', 'None', 'Others'])
+energy = st.selectbox('Energy level after meal', ['', 'Energized', 'Balanced', 'Tired', 'Bloated', 'Irritable', 'Other'])
+stress = st.selectbox('Stress level', ['', 'Low', 'Medium', 'High', 'No stress'])
+activity_type = st.selectbox('Physical Activity', ['', 'Daily walk', 'Strength training', 'Fitness training', 'Cardio', 'None', 'Others'])
 
 # Gut health
 st.subheader("Gut Health")
-gut = st.selectbox('Gut feeling after meal', ['Settled', 'Full', 'Bloated', 'Nauseaous', 'Neutral', 'Refreshed', 'Other'])
-bowel_freq = st.selectbox('Bowel Movement Frequency', ['None', 'Once', 'Twice', 'Three or more'])
+gut = st.selectbox('Gut feeling after meal', ['', 'Settled', 'Full', 'Bloated', 'Nauseaous', 'Neutral', 'Refreshed', 'Other'])
+bowel_freq = st.selectbox('Bowel Movement Frequency', ['', 'None', 'Once', 'Twice', 'Three or more'])
 
 if bowel_freq != 'None':
-    consistency = st.selectbox('Consistency', ['Pellety', 'Lumpy', 'Firm', 'Soft', 'Blobby', 'Mushy', 'Watery'])
-    ease = st.selectbox('Ease', ['Easy', 'Difficult to pass', 'Urgent'])
+    consistency = st.selectbox('Consistency', ['', 'Pellety', 'Lumpy', 'Firm', 'Soft', 'Blobby', 'Mushy', 'Watery'])
+    ease = st.selectbox('Ease', ['', 'Easy', 'Difficult to pass', 'Urgent'])
 else:
     consistency = None
     ease = None
@@ -79,9 +79,9 @@ if day_type == 'Period Day':
     st.write(f"**Current Period Day:** {period_day}")
     hygiene_product = st.multiselect(
         'Hygiene product used',
-        ['Super tampon', 'Normal tampon', 'Mini tampon', 'Night pad', 'Day pad']
+        ['', 'Super tampon', 'Normal tampon', 'Mini tampon', 'Night pad', 'Day pad']
     )
-    flow = st.selectbox('Menstrual Flow', ['Light', 'Medium', 'Heavy'])
+    flow = st.selectbox('Menstrual Flow', ['', 'Light', 'Medium', 'Heavy'])
     cramp_level = st.selectbox('Cramp Level', ['None', 'Mild', 'Moderate', 'More intense', 'Severe'])
 else:
     period_day = 'N/A'
@@ -92,7 +92,7 @@ else:
     
 # Skin health
 st.subheader("Skin Health")
-skin_status = st.selectbox('Acne / Skin', [
+skin_status = st.selectbox('Acne / Skin', ['', 
     'No issues',
     'Single pimple (non-inflamed)',
     'Inflamed pimple (painful, with content)',
