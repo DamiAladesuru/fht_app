@@ -40,7 +40,7 @@ food = st.text_input('What was eaten (e.g. "schoko muesli and milk")')
 
 ######################################################
 # --- Load and categorize food dictionary ---
-dict_path = "data/food_dictionary.csv"
+dict_path = "fooddata/food_dictionary.csv"
 raw_items = pd.read_csv(dict_path)["Food List"].dropna().tolist()
 
 # --- Auto-matching helper ---
