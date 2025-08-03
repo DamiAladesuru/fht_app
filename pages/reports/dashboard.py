@@ -1,22 +1,22 @@
-# --- 4. reports_app.py (Streamlit) ---
+# --- dashboard.py ---
 import streamlit as st
 import pandas as pd
-import os
 
-# Import necessary functions from other modules
 from src.visualize import plot_ingredient_trend, plot_relationship_scatter
 from src.datacleaning import clean_food_items
 from src.ner_utils import check_symptom_present
+from src.gsheets_utils import load_gsheet_data
 
 st.title("📊 Health Tracker Reports")
 
-CSV_PATH = "data/tracker.csv"
-
-if not os.path.exists(CSV_PATH):
-    st.warning("No tracker data found yet. Please fill in entries in the Tracker first.")
+# Load data from Google Sheets
+try:
+    df = load_gsheet_data()
+except Exception as e:
+    st.error("❌ Could not load data from Google Sheets.")
+    st.exception(e)
     st.stop()
 
-df = pd.read_csv(CSV_PATH)
 
 analysis_type = st.selectbox("Choose variable type to analyze", ["Food", "Gut", "Period"])
 

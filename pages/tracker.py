@@ -2,16 +2,14 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import os
-
+import re
 from src.gsheets_utils import save_to_gsheet
-
 
 st.title("My Food-Health Log")
 
-
 # Set column headers (needed to render table correctly even without data load)
 column_headers = [
-    'Date', 'Day Type', 'Work Day/Weekend', 'Meal Type', 'Meal Time', 'Item Class', 'Food Item',
+    'Date', 'Day Type', 'Work Day/Weekend', 'Meal Type', 'Meal Time', 'Item Class', 'Food',
     'Energy Level', 'Stress Level', 'Activity Type', 'Gut Feeling', 'Bowel Movement Frequency', 'Consistency',
     'Ease', 'Bristol Type', 'Gut State', 'Period Day', 'Hygiene Product', 'Menstrual Flow', 'Cramp Level',
     'Acne/Skin', 'Notes'
@@ -25,7 +23,7 @@ day_type = st.selectbox('Day Type', ['Normal Day', 'Period Day', 'Ovulation Day'
 work_or_weekend = st.selectbox('Work Day or Weekend', ['Work Day', 'Weekend/Free Day'])
     
 
-# Meal info
+# --- Meal Info and Raw Input ---
 st.subheader("Log your meal")
 meal_type = st.selectbox('Meal', ['', 'Breakfast', 'Lunch', 'Dinner', 'Snack', 'Other'])
 meal_time = st.selectbox('Time', [
@@ -36,7 +34,58 @@ meal_time = st.selectbox('Time', [
     '< 8:00'
 ])
 item_class = st.selectbox('Item Class', ['', 'Food', 'Snack', 'Drink', 'Supplement', 'Medication'])
-food_item = st.text_input('Item(s)')
+
+# Raw text input
+food = st.text_input('What was eaten (e.g. "schoko muesli and milk")')
+
+######################################################
+# --- Load and categorize food dictionary ---
+dict_path = "data/food_dictionary.csv"
+raw_items = pd.read_csv(dict_path)["Food List"].dropna().tolist()
+
+# --- Auto-matching helper ---
+def extract_food_items(text, dictionary_items):
+    if not text:
+        return []
+    text = text.lower()
+    matches = [item for item in dictionary_items if re.search(rf"\b{re.escape(item)}\b", text)]
+    return matches
+
+# Parse into a list with groups but only make real items selectable
+selectable_options = []
+display_options = []
+current_group = ""
+
+for item in raw_items:
+    if item.startswith("--") and item.endswith("--"):
+        current_group = item.strip("- ").strip()
+        continue  # Don't include the label itself in options
+    label = f"{current_group}: {item}" if current_group else item
+    display_options.append(label)
+    selectable_options.append(label)
+
+# Auto-suggest from flat list
+flat_food_list = [i for i in raw_items if not i.startswith("--")]
+suggested = extract_food_items(food, flat_food_list)
+
+# Map suggested to formatted labels
+default_selected = []
+for item in suggested:
+    for group in display_options:
+        if group.lower().endswith(item.lower()):
+            default_selected.append(group)
+            break
+
+# Multiselect with visual groupings in label
+food_item_selection = st.multiselect(
+    "Select or confirm food items",
+    options=display_options,
+    default=default_selected
+)
+###########################################################
+# Clean selected values (remove group prefix)
+food_item = [item.split(": ", 1)[-1] for item in food_item_selection]
+
 
 # Energy, stress, activity
 st.subheader("Energy, Stress, and Activity")
@@ -115,7 +164,8 @@ if st.button('Save entry'):
         'Meal Type': meal_type,
         'Meal Time': meal_time,
         'Item Class': item_class,
-        'Food Item': food_item,
+        'Food': food,
+        'Food Item': ', '.join(food_item),
         'Energy Level': energy,
         'Stress Level': stress,
         'Activity Type': activity_type,
@@ -140,7 +190,7 @@ if st.button('Save entry'):
 # Columns to show in the Streamlit table (excluding helpers like 'Consistency' and 'Ease')
 columns_to_show = [
     'Date', 'Day Type', 'Work Day/Weekend', 'Meal Type', 'Meal Time',
-    'Item Class', 'Food Item', 'Energy Level', 'Stress Level',
+    'Item Class', 'Food', 'Energy Level', 'Stress Level',
     'Activity Type', 'Gut Feeling', 'Bristol Type', 'Gut State',
     'Hygiene Product', 'Menstrual Flow', 'Cramp Level', 'Acne/Skin', 'Notes'
 ]
